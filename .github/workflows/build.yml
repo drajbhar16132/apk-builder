@@ -1,0 +1,35 @@
+name: Build APK
+run-name: Build ${{ inputs.bid }}
+on:
+  workflow_dispatch:
+    inputs:
+      bid:
+        description: build id
+        required: false
+        default: manual
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 gen.py
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.5"
+      - run: gradle assembleDebug --no-daemon
+      - run: |
+          mkdir -p output
+          cp app/build/outputs/apk/debug/app-debug.apk output/app.apk
+          git config user.name github-actions
+          git config user.email actions@github.com
+          git add -f output/app.apk
+          git commit -m "apk" || true
+          git pull --rebase
+          git push
