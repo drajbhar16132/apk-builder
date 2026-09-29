@@ -15,7 +15,6 @@ meta = ('        <meta-data android:name="com.google.android.gms.ads.APPLICATION
 
 sp = c.get('splash', {})
 use_splash = bool(sp.get('on'))
-sp_style = sp.get('style') if sp.get('style') in ('zoom', 'bounce', 'spin', 'pulse') else 'zoom'
 sp_bg = sp.get('bg') if re.fullmatch(r'#[0-9a-fA-F]{6}', str(sp.get('bg', ''))) else '#1f7a4d'
 try:
     sp_ms = min(max(int(sp.get('ms', 3000)), 1000), 6000)
@@ -24,34 +23,44 @@ except (TypeError, ValueError):
 sp_lum = 0.299 * int(sp_bg[1:3], 16) + 0.587 * int(sp_bg[3:5], 16) + 0.114 * int(sp_bg[5:7], 16)
 sp_fg = '#000000' if sp_lum > 160 else '#FFFFFF'
 
-sp_anims = {
-    'zoom': """            spLogo.setScaleX(0.3f);
-            spLogo.setScaleY(0.3f);
-            spLogo.setAlpha(0f);
-            spLogo.animate().scaleX(1f).scaleY(1f).alpha(1f).setDuration(800).setInterpolator(new OvershootInterpolator()).start();
-""",
-    'bounce': """            spLogo.setTranslationY(-300 * spD);
-            spLogo.setAlpha(0f);
-            spLogo.animate().translationY(0f).alpha(1f).setDuration(1000).setInterpolator(new BounceInterpolator()).start();
-""",
-    'spin': """            spLogo.setScaleX(0f);
-            spLogo.setScaleY(0f);
-            spLogo.setRotation(-360f);
-            spLogo.animate().scaleX(1f).scaleY(1f).rotation(0f).setDuration(1000).setInterpolator(new DecelerateInterpolator()).start();
-""",
-    'pulse': """            spLogo.setAlpha(0f);
-            spLogo.animate().alpha(1f).setDuration(600).start();
-            ObjectAnimator spPulse = ObjectAnimator.ofPropertyValuesHolder(spLogo,
-                PropertyValuesHolder.ofFloat("scaleX", 1f, 1.15f),
-                PropertyValuesHolder.ofFloat("scaleY", 1f, 1.15f));
-            spPulse.setDuration(700);
-            spPulse.setStartDelay(600);
-            spPulse.setRepeatCount(ValueAnimator.INFINITE);
-            spPulse.setRepeatMode(ValueAnimator.REVERSE);
-            spPulse.start();
-            spKeep[0] = spPulse;
-""",
-}
+SP_PROPS = ('alpha', 'scaleX', 'scaleY', 'translationX', 'translationY', 'rotation', 'rotationX', 'rotationY')
+SP_INTERP = {'linear': 'LinearInterpolator', 'accel': 'AccelerateInterpolator', 'decel': 'DecelerateInterpolator',
+             'accdec': 'AccelerateDecelerateInterpolator', 'overshoot': 'OvershootInterpolator',
+             'anticipate': 'AnticipateInterpolator', 'pop': 'AnticipateOvershootInterpolator', 'bounce': 'BounceInterpolator'}
+
+def sp_one(a, var, loop):
+    hs = []
+    for k, vals in (a.get('p') or {}).items():
+        if k not in SP_PROPS or not isinstance(vals, list) or len(vals) < 2:
+            continue
+        nums = [max(-5000.0, min(5000.0, float(v))) for v in vals[:12]]
+        dp = ' * spD' if k.startswith('translation') else ''
+        hs.append('PropertyValuesHolder.ofFloat("' + k + '", ' + ', '.join(str(n) + 'f' + dp for n in nums) + ')')
+    if not hs:
+        return ''
+    itp = SP_INTERP.get(a.get('i'), 'LinearInterpolator')
+    dur = max(100, min(5000, int(a.get('d', 800))))
+    t = '            '
+    code = t + 'ObjectAnimator ' + var + ' = ObjectAnimator.ofPropertyValuesHolder(spLogo, ' + ', '.join(hs) + ');\n'
+    code += t + var + '.setDuration(' + str(dur) + ');\n'
+    code += t + var + '.setInterpolator(new android.view.animation.' + itp + '());\n'
+    if loop:
+        code += t + var + '.setStartDelay(' + str(max(0, min(5000, int(a.get('delay', 0))))) + ');\n'
+        code += t + var + '.setRepeatCount(ValueAnimator.INFINITE);\n'
+        code += t + var + '.setRepeatMode(ValueAnimator.' + ('RESTART' if a.get('mode') == 'restart' else 'REVERSE') + ');\n'
+    return code + t + var + '.start();\n'
+
+def sp_anim_code(a):
+    if not isinstance(a, dict):
+        return ''
+    code = sp_one(a, 'spA1', False)
+    if code:
+        code += '            spKeep[0] = spA1;\n'
+    if isinstance(a.get('loop'), dict):
+        lp = sp_one(a['loop'], 'spA2', True)
+        if lp:
+            code += lp + '            spKeep[1] = spA2;\n'
+    return code
 
 splash_imports = """import android.animation.Animator;
 import android.animation.ObjectAnimator;
@@ -101,19 +110,20 @@ splash_code = """        if (b == null) {
             spCol.addView(spText, new LinearLayout.LayoutParams(-2, -2));
             spl.addView(spCol, new FrameLayout.LayoutParams(-2, -2, Gravity.CENTER));
             addContentView(spl, new ViewGroup.LayoutParams(-1, -1));
-            final Animator[] spKeep = new Animator[1];
+            final Animator[] spKeep = new Animator[2];
+            spLogo.setCameraDistance(8000 * spD);
 @@ANIM@@            spText.setAlpha(0f);
             spText.setTranslationY(30 * spD);
             spText.animate().alpha(1f).translationY(0f).setStartDelay(500).setDuration(600).start();
             spl.postDelayed(() -> {
-                if (spKeep[0] != null) spKeep[0].cancel();
+                for (Animator x : spKeep) if (x != null) x.cancel();
                 spl.animate().alpha(0f).setDuration(450).withEndAction(() -> {
                     ViewGroup par = (ViewGroup) spl.getParent();
                     if (par != null) par.removeView(spl);
                 }).start();
             }, @@MS@@);
         }
-""".replace('@@BG@@', sp_bg).replace('@@FG@@', sp_fg).replace('@@MS@@', str(sp_ms)).replace('@@ANIM@@', sp_anims[sp_style]).replace('@@NAME@@', json.dumps(name)) if use_splash else ''
+""".replace('@@BG@@', sp_bg).replace('@@FG@@', sp_fg).replace('@@MS@@', str(sp_ms)).replace('@@ANIM@@', sp_anim_code(sp.get('anim'))).replace('@@NAME@@', json.dumps(name)) if use_splash else ''
 
 def w(path, text):
     d = os.path.dirname(path)
