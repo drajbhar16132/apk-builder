@@ -71,8 +71,35 @@ document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
   document.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.id === 'p-' + mode));
 });
 
-$('pick').onclick = () => $('file').click();
+function setFile(name, text){
+  fileText = text;
+  $('fname').textContent = '✅ ' + name + ' (' + Math.round(text.length/1024) + ' KB)';
+}
+$('pick').onclick = async () => {
+  const cap = window.Capacitor;
+  if(cap && cap.isNativePlatform && cap.isNativePlatform()){
+    try{
+      const FilePicker = cap.registerPlugin('FilePicker');
+      const res = await FilePicker.pickFiles({limit: 1, readData: true});
+      const f = res.files && res.files[0];
+      if(!f) return;
+      const bin = atob(f.data);
+      const bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
+      setFile(f.name, new TextDecoder('utf-8').decode(bytes));
+      return;
+    }catch(e){
+      if(e && /cancel/i.test(String(e.message || e))) return;
+      alert('Native picker error: ' + (e.message || e) + '\n\nPlugin install karke "npx cap sync" chalao.');
+    }
+  }
+  $('file').click();
+};
 $('file').onchange = async e => {
+  const f = e.target.files[0];
+  if(!f) return;
+  setFile(f.name, await f.text());
+};
+$('file').onchange_unused = async e => {
   const f = e.target.files[0];
   if(!f) return;
   fileText = await f.text();
