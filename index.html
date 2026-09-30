@@ -1,143 +1,586 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>HTML Runner</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTML & URL Runner</title>
+
 <style>
-:root{--bg:#0f1115;--card:#1a1d24;--text:#eef0f4;--muted:#9aa0ac;--accent:#6c8cff;--border:#2a2e38}
-*{box-sizing:border-box;margin:0}
-body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--text);padding:env(safe-area-inset-top) 12px calc(env(safe-area-inset-bottom) + 12px);min-height:100vh}
-h1{font-size:20px;padding:14px 0 10px}
-.tabs{display:flex;gap:6px;margin-bottom:10px}
-button{flex:1;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:15px;font-weight:600}
-button.on,button.go{background:var(--accent);border-color:var(--accent);color:#fff}
-textarea,input[type=url]{width:100%;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:14px;font-family:ui-monospace,monospace}
-textarea{height:45vh;resize:vertical}
-.pane{display:none}.pane.on{display:block}
-.file{display:block;text-align:center;border:2px dashed var(--border);border-radius:12px;padding:40px 12px;color:var(--muted)}
-.file input{display:none}
-#fname{margin-top:8px;color:var(--muted);font-size:13px}
-.note{color:var(--muted);font-size:12px;margin:8px 0}
-.row{display:flex;gap:8px;margin-top:12px}
-#full{position:fixed;inset:0;background:#fff;display:none;flex-direction:column;z-index:10}
-#full.on{display:flex}
-#bar{background:var(--bg);padding:calc(env(safe-area-inset-top) + 6px) 10px 6px;display:flex;gap:8px}
-#bar button{padding:8px}
-#frame{flex:1;width:100%;border:0;background:#fff;padding-bottom:env(safe-area-inset-bottom)}
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:Arial,sans-serif;
+  background:#0f1115;
+  color:#fff;
+  height:100vh;
+  overflow:hidden;
+}
+
+header{
+  height:58px;
+  background:#181b22;
+  display:flex;
+  align-items:center;
+  padding:0 14px;
+  gap:10px;
+  border-bottom:1px solid #2a2e38;
+}
+
+.logo{
+  font-size:19px;
+  font-weight:bold;
+  white-space:nowrap;
+}
+
+.logo span{
+  color:#4caf50;
+}
+
+.header-buttons{
+  margin-left:auto;
+  display:flex;
+  gap:7px;
+}
+
+button{
+  border:0;
+  border-radius:7px;
+  padding:9px 13px;
+  color:white;
+  background:#292e38;
+  cursor:pointer;
+  font-size:14px;
+}
+
+button:hover{
+  background:#363c48;
+}
+
+.run{
+  background:#20a44b;
+}
+
+.run:hover{
+  background:#17853b;
+}
+
+.main{
+  height:calc(100vh - 58px);
+  display:flex;
+}
+
+.editor-panel{
+  width:50%;
+  min-width:300px;
+  display:flex;
+  flex-direction:column;
+  border-right:1px solid #2a2e38;
+}
+
+.tabs{
+  height:45px;
+  display:flex;
+  align-items:center;
+  background:#15181e;
+  border-bottom:1px solid #292d36;
+}
+
+.tab{
+  padding:13px 18px;
+  cursor:pointer;
+  color:#aaa;
+}
+
+.tab.active{
+  color:#fff;
+  border-bottom:2px solid #4caf50;
+}
+
+.editor{
+  flex:1;
+  width:100%;
+  resize:none;
+  border:0;
+  outline:none;
+  padding:15px;
+  background:#0b0d10;
+  color:#d7e2d8;
+  font-family:Consolas,Monaco,monospace;
+  font-size:14px;
+  line-height:1.5;
+}
+
+.bottom-bar{
+  height:45px;
+  background:#181b22;
+  display:flex;
+  align-items:center;
+  padding:0 10px;
+  gap:8px;
+}
+
+.status{
+  color:#aaa;
+  font-size:12px;
+  margin-left:auto;
+}
+
+.preview-panel{
+  width:50%;
+  display:flex;
+  flex-direction:column;
+  background:white;
+}
+
+.preview-header{
+  height:45px;
+  background:#181b22;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  padding:0 10px;
+}
+
+.preview-title{
+  font-size:14px;
+}
+
+.preview-actions{
+  margin-left:auto;
+  display:flex;
+  gap:6px;
+}
+
+.preview{
+  width:100%;
+  flex:1;
+  border:0;
+  background:#fff;
+}
+
+.url-box{
+  display:none;
+  height:45px;
+  background:#15181e;
+  padding:6px;
+  gap:6px;
+}
+
+.url-box input{
+  flex:1;
+  border:1px solid #343944;
+  border-radius:6px;
+  background:#0d1014;
+  color:white;
+  padding:8px;
+  outline:none;
+}
+
+.url-box button{
+  background:#2864d7;
+}
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.75);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:100;
+}
+
+.modal-box{
+  width:90%;
+  max-width:500px;
+  background:#1a1d24;
+  border-radius:12px;
+  padding:20px;
+}
+
+.modal-box h2{
+  margin-bottom:15px;
+}
+
+.modal-box input{
+  width:100%;
+  padding:12px;
+  border:1px solid #3a3f4a;
+  background:#0d1014;
+  color:white;
+  border-radius:7px;
+  margin-bottom:12px;
+}
+
+.modal-buttons{
+  display:flex;
+  gap:8px;
+  justify-content:flex-end;
+}
+
+@media(max-width:700px){
+  .main{
+    flex-direction:column;
+    overflow:auto;
+  }
+
+  .editor-panel,
+  .preview-panel{
+    width:100%;
+    height:50vh;
+    min-width:0;
+  }
+
+  .editor-panel{
+    border-right:0;
+    border-bottom:1px solid #333;
+  }
+
+  .header-buttons button{
+    padding:8px;
+    font-size:12px;
+  }
+
+  .logo{
+    font-size:15px;
+  }
+}
 </style>
 </head>
+
 <body>
-<h1>▶️ HTML Runner</h1>
-<div class="tabs">
-  <button class="on" data-t="code">Code</button>
-  <button data-t="file">File</button>
-  <button data-t="url">URL</button>
+
+<header>
+  <div class="logo">HTML <span>Runner</span></div>
+
+  <div class="header-buttons">
+    <button onclick="newProject()">New</button>
+    <button onclick="saveCode()">Save</button>
+    <button onclick="loadCode()">Load</button>
+    <button class="run" onclick="runCode()">▶ Run</button>
+  </div>
+</header>
+
+<div class="main">
+
+  <section class="editor-panel">
+
+    <div class="tabs">
+      <div class="tab active" onclick="setTab('html',this)">HTML</div>
+      <div class="tab" onclick="setTab('css',this)">CSS</div>
+      <div class="tab" onclick="setTab('js',this)">JS</div>
+    </div>
+
+    <textarea id="htmlEditor" class="editor" spellcheck="false"></textarea>
+    <textarea id="cssEditor" class="editor" spellcheck="false" style="display:none"></textarea>
+    <textarea id="jsEditor" class="editor" spellcheck="false" style="display:none"></textarea>
+
+    <div class="bottom-bar">
+      <button onclick="clearEditor()">Clear</button>
+      <button onclick="copyCode()">Copy</button>
+      <div class="status" id="status">Ready</div>
+    </div>
+
+  </section>
+
+  <section class="preview-panel">
+
+    <div class="preview-header">
+      <div class="preview-title">Preview</div>
+
+      <div class="preview-actions">
+        <button onclick="openUrlBox()">🌐 URL</button>
+        <button onclick="refreshPreview()">↻</button>
+        <button onclick="fullScreen()">⛶</button>
+      </div>
+    </div>
+
+    <div class="url-box" id="urlBox">
+      <input id="urlInput" placeholder="https://example.com">
+      <button onclick="openURL()">Open</button>
+      <button onclick="closeUrlBox()">×</button>
+    </div>
+
+    <iframe id="preview" class="preview"></iframe>
+
+  </section>
+
 </div>
 
-<div class="pane on" id="p-code">
-  <textarea id="code" spellcheck="false" placeholder="Yahan HTML code paste karo..."></textarea>
-</div>
+<div class="modal" id="saveModal">
+  <div class="modal-box">
+    <h2>Save Project</h2>
+    <input id="projectName" placeholder="Project name">
 
-<div class="pane" id="p-file">
-  <button class="go" id="pick" type="button" style="width:100%">📁 Select File</button>
-  <input type="file" id="file" style="width:100%;margin-top:10px;color:var(--muted)">
-  <div class="note">Button na chale to upar wale "Choose file" se select karo. Koi bhi .html / .htm file chalegi.</div>
-  <div id="fname"></div>
-</div>
-
-<div class="pane" id="p-url">
-  <input type="url" id="url" placeholder="https://example.com">
-  <div class="note">Note: kuch sites (Google, YouTube, Facebook) iframe me block hoti hain. Aisi site "New tab" se kholo.</div>
-</div>
-
-<div class="row">
-  <button class="go" id="run">▶ Run</button>
-  <button id="tab">New tab</button>
-</div>
-
-<div id="full">
-  <div id="bar"><button id="close">✕ Close</button><button id="reload">↻ Reload</button></div>
-  <iframe id="frame" sandbox="allow-scripts allow-forms allow-modals allow-popups allow-same-origin"></iframe>
+    <div class="modal-buttons">
+      <button onclick="closeSave()">Cancel</button>
+      <button class="run" onclick="confirmSave()">Save</button>
+    </div>
+  </div>
 </div>
 
 <script>
-const $ = id => document.getElementById(id);
-let mode = 'code', fileText = '';
 
-document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
-  mode = b.dataset.t;
-  document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('on', x === b));
-  document.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.id === 'p-' + mode));
-});
+const htmlEditor = document.getElementById("htmlEditor");
+const cssEditor = document.getElementById("cssEditor");
+const jsEditor = document.getElementById("jsEditor");
+const preview = document.getElementById("preview");
+const statusText = document.getElementById("status");
 
-function setFile(name, text){
-  fileText = text;
-  $('fname').textContent = '✅ ' + name + ' (' + Math.round(text.length/1024) + ' KB)';
+htmlEditor.value = `<!DOCTYPE html>
+<html>
+<head>
+<title>My App</title>
+</head>
+<body>
+
+<h1>Hello World!</h1>
+<p>Edit the code and press Run.</p>
+
+<button onclick="hello()">Click Me</button>
+
+</body>
+</html>`;
+
+cssEditor.value = `body{
+  font-family:Arial;
+  text-align:center;
+  padding:40px;
+  background:#f2f2f2;
 }
-$('pick').onclick = async () => {
-  const cap = window.Capacitor;
-  if(cap && cap.isNativePlatform && cap.isNativePlatform()){
-    try{
-      const FilePicker = cap.registerPlugin('FilePicker');
-      const res = await FilePicker.pickFiles({limit: 1, readData: true});
-      const f = res.files && res.files[0];
-      if(!f) return;
-      const bin = atob(f.data);
-      const bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
-      setFile(f.name, new TextDecoder('utf-8').decode(bytes));
-      return;
-    }catch(e){
-      if(e && /cancel/i.test(String(e.message || e))) return;
-      alert('Native picker error: ' + (e.message || e) + '\n\nPlugin install karke "npx cap sync" chalao.');
+
+h1{
+  color:#222;
+}
+
+button{
+  padding:12px 20px;
+  border:0;
+  border-radius:8px;
+  background:#2196f3;
+  color:white;
+  cursor:pointer;
+}`;
+
+jsEditor.value = `function hello(){
+  alert("Hello from JavaScript!");
+}`;
+
+function setTab(type, element){
+
+  document.querySelectorAll(".tab").forEach(t=>{
+    t.classList.remove("active");
+  });
+
+  element.classList.add("active");
+
+  htmlEditor.style.display="none";
+  cssEditor.style.display="none";
+  jsEditor.style.display="none";
+
+  if(type==="html") htmlEditor.style.display="block";
+  if(type==="css") cssEditor.style.display="block";
+  if(type==="js") jsEditor.style.display="block";
+}
+
+function runCode(){
+
+  const html = htmlEditor.value;
+  const css = cssEditor.value;
+  const js = jsEditor.value;
+
+  const completeCode = `
+  ${html}
+
+  <style>
+  ${css}
+  </style>
+
+  <script>
+  ${js.replace(/<\/script>/gi,"<\\/script>")}
+  <\/script>
+  `;
+
+  preview.srcdoc = completeCode;
+
+  statusText.textContent="Code executed successfully";
+}
+
+function refreshPreview(){
+  runCode();
+}
+
+function newProject(){
+
+  if(confirm("Create a new project?")){
+    htmlEditor.value="";
+    cssEditor.value="";
+    jsEditor.value="";
+    preview.srcdoc="";
+    statusText.textContent="New project";
+  }
+}
+
+function clearEditor(){
+
+  if(confirm("Clear current editor?")){
+
+    htmlEditor.value="";
+    cssEditor.value="";
+    jsEditor.value="";
+
+    statusText.textContent="Editor cleared";
+  }
+}
+
+function copyCode(){
+
+  const completeCode =
+`HTML:
+${htmlEditor.value}
+
+CSS:
+${cssEditor.value}
+
+JAVASCRIPT:
+${jsEditor.value}`;
+
+  navigator.clipboard.writeText(completeCode)
+  .then(()=>{
+    statusText.textContent="Code copied";
+  });
+}
+
+function saveCode(){
+
+  document.getElementById("saveModal").style.display="flex";
+  document.getElementById("projectName").focus();
+}
+
+function closeSave(){
+  document.getElementById("saveModal").style.display="none";
+}
+
+function confirmSave(){
+
+  const name =
+    document.getElementById("projectName").value.trim() ||
+    "My Project";
+
+  const project = {
+    html:htmlEditor.value,
+    css:cssEditor.value,
+    js:jsEditor.value
+  };
+
+  localStorage.setItem(
+    "htmlRunner_" + name,
+    JSON.stringify(project)
+  );
+
+  closeSave();
+
+  statusText.textContent =
+    "Saved: " + name;
+}
+
+function loadCode(){
+
+  const keys=[];
+
+  for(let i=0;i<localStorage.length;i++){
+
+    const key=localStorage.key(i);
+
+    if(key.startsWith("htmlRunner_")){
+      keys.push(key.replace("htmlRunner_",""));
     }
   }
-  $('file').click();
-};
-$('file').onchange = async e => {
-  const f = e.target.files[0];
-  if(!f) return;
-  setFile(f.name, await f.text());
-};
-$('file').onchange_unused = async e => {
-  const f = e.target.files[0];
-  if(!f) return;
-  fileText = await f.text();
-  $('fname').textContent = '✅ ' + f.name + ' (' + Math.round(f.size/1024) + ' KB)';
-};
 
-function normUrl(u){
-  u = u.trim();
-  if(!u) return '';
-  return /^https?:\/\//i.test(u) ? u : 'https://' + u;
-}
-function getSource(){
-  if(mode === 'code') return {html: $('code').value};
-  if(mode === 'file') return {html: fileText};
-  return {url: normUrl($('url').value)};
-}
-
-function run(){
-  const s = getSource();
-  if(s.url === '' || s.html === '' ){
-    alert('Pehle code, file ya URL do.');
+  if(keys.length===0){
+    alert("No saved projects found.");
     return;
   }
-  if(s.url){ $('frame').removeAttribute('srcdoc'); $('frame').src = s.url; }
-  else { $('frame').removeAttribute('src'); $('frame').srcdoc = s.html; }
-  $('full').classList.add('on');
-}
-$('run').onclick = run;
-$('close').onclick = () => { $('full').classList.remove('on'); $('frame').removeAttribute('src'); $('frame').removeAttribute('srcdoc'); };
-$('reload').onclick = run;
 
-$('tab').onclick = () => {
-  const s = getSource();
-  if(s.url === '' || s.html === ''){ alert('Pehle code, file ya URL do.'); return; }
-  if(s.url){ window.open(s.url, '_blank'); return; }
-  const url = URL.createObjectURL(new Blob([s.html], {type:'text/html'}));
-  window.open(url, '_blank');
-};
+  const name=prompt(
+    "Enter project name:\\n\\n" +
+    keys.join("\\n")
+  );
+
+  if(!name) return;
+
+  const data=localStorage.getItem(
+    "htmlRunner_" + name
+  );
+
+  if(!data){
+    alert("Project not found.");
+    return;
+  }
+
+  const project=JSON.parse(data);
+
+  htmlEditor.value=project.html || "";
+  cssEditor.value=project.css || "";
+  jsEditor.value=project.js || "";
+
+  runCode();
+
+  statusText.textContent="Loaded: "+name;
+}
+
+function openUrlBox(){
+  document.getElementById("urlBox").style.display="flex";
+  document.getElementById("urlInput").focus();
+}
+
+function closeUrlBox(){
+  document.getElementById("urlBox").style.display="none";
+}
+
+function openURL(){
+
+  let url =
+    document.getElementById("urlInput").value.trim();
+
+  if(!url) return;
+
+  if(!/^https?:\\/\\//i.test(url)){
+    url="https://"+url;
+  }
+
+  preview.src=url;
+
+  statusText.textContent="Opening URL";
+
+}
+
+function fullScreen(){
+
+  const panel =
+    document.querySelector(".preview-panel");
+
+  if(panel.requestFullscreen){
+    panel.requestFullscreen();
+  }
+}
+
+document.addEventListener("keydown",function(e){
+
+  if(e.ctrlKey && e.key==="Enter"){
+    e.preventDefault();
+    runCode();
+  }
+
+});
+
+runCode();
+
 </script>
+
 </body>
 </html>
