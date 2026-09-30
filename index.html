@@ -40,9 +40,9 @@ textarea{height:45vh;resize:vertical}
 </div>
 
 <div class="pane" id="p-file">
-  <label class="file">📁 HTML file chuno (.html)
-    <input type="file" id="file" accept=".html,.htm,text/html">
-  </label>
+  <button class="go" id="pick" type="button" style="width:100%">📁 Select File</button>
+  <input type="file" id="file" style="width:100%;margin-top:10px;color:var(--muted)">
+  <div class="note">Button na chale to upar wale "Choose file" se select karo. Koi bhi .html / .htm file chalegi.</div>
   <div id="fname"></div>
 </div>
 
@@ -71,6 +71,7 @@ document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
   document.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.id === 'p-' + mode));
 });
 
+$('pick').onclick = () => $('file').click();
 $('file').onchange = async e => {
   const f = e.target.files[0];
   if(!f) return;
