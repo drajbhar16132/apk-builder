@@ -1,105 +1,203 @@
 <!DOCTYPE html>
 <html lang="hi"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>APK Studio</title>
+<title>Code Studio</title>
 <style>
-:root{--bg:#10181f;--card:#18242e;--ink:#e8f0f4;--mut:#8ba0ad;--acc:#34d399;--bd:#26384a;--red:#f87171}
+:root{--bg:#0f1720;--card:#17222d;--ink:#e6eef4;--mut:#8aa0ae;--acc:#34d399;--bd:#253646;--red:#f87171;--tg:#7dd3fc;--st:#fbbf24;--cm:#6b8394;--kw:#c4b5fd;--nm:#fb923c;--at:#86efac}
+body.light{--bg:#f5f7f9;--card:#fff;--ink:#14212b;--mut:#5d7280;--acc:#0f766e;--bd:#d5dfe6;--tg:#0369a1;--st:#b45309;--cm:#8aa0ae;--kw:#7c3aed;--nm:#c2410c;--at:#15803d}
 *{box-sizing:border-box;margin:0;font-family:system-ui,sans-serif}
 body{background:var(--bg);color:var(--ink);height:100dvh;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
-header{padding:10px 14px;font-weight:800;color:var(--acc);font-size:18px;display:flex;justify-content:space-between;align-items:center}
-nav{display:flex;border-bottom:1px solid var(--bd)}
-nav button{flex:1;background:none;border:0;color:var(--mut);padding:12px 4px;font-size:14px;border-bottom:3px solid transparent}
-nav button.on{color:var(--acc);border-color:var(--acc);font-weight:700}
-.tab{display:none;flex:1;min-height:0;overflow:auto;padding:12px}.tab.on{display:flex;flex-direction:column}
-textarea,input,select{width:100%;background:var(--card);color:var(--ink);border:1px solid var(--bd);border-radius:10px;padding:10px;font-size:15px;margin-bottom:8px}
-#code{flex:1;font-family:ui-monospace,Menlo,monospace;font-size:13px;line-height:1.45;resize:none;white-space:pre;tab-size:2}
-.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
-button.b{background:var(--acc);color:#06281c;border:0;border-radius:10px;padding:10px 14px;font-weight:700;font-size:14px}
-button.g{background:var(--card);color:var(--ink);border:1px solid var(--bd)}
-iframe{flex:1;width:100%;border:1px solid var(--bd);border-radius:10px;background:#fff;min-height:300px}
-label{font-size:13px;color:var(--mut);margin-bottom:3px;display:block}
-#log{background:#0b1117;border:1px solid var(--bd);border-radius:10px;padding:10px;font:12px/1.5 ui-monospace,monospace;white-space:pre-wrap;min-height:120px;flex:1;overflow:auto}
-.ok{color:var(--acc)}.er{color:var(--red)}a{color:var(--acc)}
+nav{display:flex;border-top:1px solid var(--bd);background:var(--card);padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;background:none;border:0;color:var(--mut);padding:10px 2px;font-size:12px}
+nav button.on{color:var(--acc);font-weight:800}
+.tab{display:none;flex:1;min-height:0;flex-direction:column;padding:8px;overflow:auto}.tab.on{display:flex}
+.row{display:flex;gap:6px;overflow-x:auto;margin-bottom:6px;flex-shrink:0;align-items:center}
+button.b,select.b{background:var(--acc);color:#04251a;border:0;border-radius:8px;padding:8px 11px;font-weight:700;font-size:14px;white-space:nowrap;flex-shrink:0}
+button.g,select.g{background:var(--card);color:var(--ink);border:1px solid var(--bd)}
+button.f{background:var(--card);color:var(--mut);border:1px solid var(--bd);border-radius:8px;padding:6px 10px;font-size:13px;flex-shrink:0}
+button.f.on{color:var(--acc);border-color:var(--acc);font-weight:700}
+input,select.i{width:100%;background:var(--card);color:var(--ink);border:1px solid var(--bd);border-radius:8px;padding:9px;font-size:15px;margin-bottom:6px}
+label{font-size:12px;color:var(--mut);display:block;margin-bottom:2px}
+#ew{flex:1;min-height:200px;position:relative;display:flex;border:1px solid var(--bd);border-radius:8px;overflow:hidden;background:var(--card)}
+#gt{width:38px;padding:10px 4px;text-align:right;color:var(--cm);overflow:hidden;white-space:pre;border-right:1px solid var(--bd);flex-shrink:0}
+#cw{position:relative;flex:1}
+#hl,#ta{position:absolute;inset:0;margin:0;padding:10px;font:var(--fs,13px)/1.5 ui-monospace,Menlo,monospace;white-space:pre;tab-size:2;border:0;letter-spacing:0}
+#gt{font:var(--fs,13px)/1.5 ui-monospace,Menlo,monospace}
+#hl{overflow:hidden;pointer-events:none;color:var(--ink)}
+#ta{background:transparent;color:transparent;caret-color:var(--acc);resize:none;outline:0;overflow:auto;width:100%;height:100%}
+#ta::selection{background:#34d39944}
+.t{color:var(--tg)}.s{color:var(--st)}.c{color:var(--cm);font-style:italic}.k{color:var(--kw)}.n{color:var(--nm)}.a{color:var(--at)}
+#fr,#ufr{flex:1;width:100%;border:1px solid var(--bd);border-radius:8px;background:#fff;min-height:200px}
+#con{height:110px;overflow:auto;background:#0a1016;color:#cfe;border:1px solid var(--bd);border-radius:8px;padding:6px;font:12px/1.4 ui-monospace,monospace;margin-top:6px;flex-shrink:0}
+.er{color:var(--red)}.wr{color:var(--st)}.ok{color:var(--acc)}
+#log{background:#0a1016;color:#cfe;border:1px solid var(--bd);border-radius:8px;padding:8px;font:12px/1.5 ui-monospace,monospace;white-space:pre-wrap;min-height:110px;margin-top:6px}
+a{color:var(--acc)}.chk{display:flex;flex-wrap:wrap;gap:10px;font-size:14px;margin-bottom:8px}.chk label{font-size:14px;color:var(--ink)}
 </style></head><body>
-<header>APK Studio <span style="font-size:12px;color:var(--mut)">HTML → APK</span></header>
-<nav id="nv"></nav>
 
 <section class="tab on" id="t-code">
-<div class="bar"><button class="b" onclick="go('prev');run()">▶ Run</button>
-<button class="b g" onclick="document.getElementById('file').click()">📂 Open file</button>
-<button class="b g" onclick="dl()">⬇ Save</button>
-<button class="b g" onclick="sample()">Sample</button></div>
-<input type="file" id="file" accept=".html,.htm,.txt" hidden onchange="openF(this)">
-<textarea id="code" spellcheck="false" autocapitalize="off" oninput="persist()"></textarea>
+<div class="row" id="fl"></div>
+<div class="row">
+<button class="b" onclick="go('run')">▶ Run</button>
+<button class="f" onclick="exe('undo')">↶</button><button class="f" onclick="exe('redo')">↷</button>
+<button class="f" onclick="tg('fb')">🔍 Find</button>
+<button class="f" onclick="fmt()">✨ Format</button>
+<select class="b g" id="sn" onchange="snip(this)"><option value="">＋ Snippet</option></select>
+<button class="f" onclick="fs(-1)">A−</button><button class="f" onclick="fs(1)">A+</button>
+<button class="f" onclick="addF()">＋File</button><button class="f" onclick="renF()">✎</button><button class="f" onclick="delF()">🗑</button>
+<button class="f" onclick="$('up').click()">📂 Open</button><button class="f" onclick="dlF()">⬇ Save</button>
+<button class="f" onclick="document.body.classList.toggle('light');LS('light',document.body.classList.contains('light')?1:'')">🌓</button>
+</div>
+<input type="file" id="up" multiple hidden accept=".html,.htm,.css,.js,.json,.txt,.svg" onchange="openF(this)">
+<div class="row" id="fb" style="display:none"><input id="fq" placeholder="Find" style="margin:0;min-width:110px"><input id="rq" placeholder="Replace" style="margin:0;min-width:110px"><button class="f" onclick="fnd()">Next</button><button class="f" onclick="rep(0)">Replace</button><button class="f" onclick="rep(1)">All</button></div>
+<div id="ew"><div id="gt"></div><div id="cw"><pre id="hl"></pre><textarea id="ta" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="Yahan code likho..."></textarea></div></div>
+<div class="row" id="sy" style="margin:6px 0 0"></div>
 </section>
 
-<section class="tab" id="t-prev"><div class="bar"><button class="b" onclick="run()">↻ Reload</button></div><iframe id="fr" sandbox="allow-scripts allow-forms allow-modals allow-same-origin"></iframe></section>
+<section class="tab" id="t-run">
+<div class="row"><button class="b" onclick="run()">↻ Reload</button><button class="b g" onclick="chrome()">🌐 Open in Chrome</button><button class="b g" onclick="shareH()">📤 Share / Save</button><button class="f" onclick="$('con').innerHTML=''">Clear</button></div>
+<iframe id="fr" sandbox="allow-scripts allow-forms allow-modals allow-same-origin allow-popups"></iframe>
+<div id="con"></div><input id="ev" placeholder="Console: JS likho aur Enter dabao" style="margin:6px 0 0">
+</section>
+
+<section class="tab" id="t-url">
+<label>Website / URL</label><input id="ur" type="url" placeholder="https://example.com">
+<div class="row"><button class="b" onclick="urlRun()">▶ Run here</button><button class="b g" onclick="urlChrome()">🌐 Open in Chrome</button><button class="b g" onclick="urlSrc()">⬇ Source editor mein lo</button></div>
+<div class="mut" style="font-size:12px;color:var(--mut);margin-bottom:6px">Kuch sites yahan embed hone se mana karti hain. Tab "Open in Chrome" use karo. Source sirf CORS allow karne wali sites ka aata hai.</div>
+<iframe id="ufr" sandbox="allow-scripts allow-forms allow-same-origin allow-popups"></iframe>
+</section>
 
 <section class="tab" id="t-apk">
 <label>GitHub username</label><input id="gu" value="drajbhar16132">
 <label>Repo name</label><input id="gr" value="apk-builder">
-<label>GitHub token (sirf is phone mein save hota hai)</label><input id="gt" type="password" placeholder="github_pat_...">
+<label>GitHub token (sirf is phone mein save hota hai)</label><input id="gt2" type="password" placeholder="github_pat_...">
 <label>App ka naam</label><input id="an" value="My App">
 <label>Package ID</label><input id="ai" value="com.myapp.app">
-<div class="bar"><button class="b" id="bb" onclick="build()">🚀 APK banao</button></div>
-<div id="log">Taiyar. Token ko "Contents: Read/Write" aur "Actions: Read/Write" permission chahiye.</div>
+<div class="row" style="overflow:visible"><div style="flex:1"><label>Version name</label><input id="vn" value="1.0"></div><div style="flex:1"><label>Version code</label><input id="vc" type="number" value="1"></div></div>
+<label>Screen orientation</label><select class="i" id="or"><option value="">Auto</option><option>portrait</option><option>landscape</option></select>
+<label>Permissions (Internet hamesha on)</label>
+<div class="chk"><label><input type="checkbox" class="pm" value="CAMERA" style="width:auto;margin:0"> Camera</label><label><input type="checkbox" class="pm" value="ACCESS_FINE_LOCATION" style="width:auto;margin:0"> Location</label><label><input type="checkbox" class="pm" value="RECORD_AUDIO" style="width:auto;margin:0"> Mic</label><label><input type="checkbox" class="pm" value="READ_EXTERNAL_STORAGE" style="width:auto;margin:0"> Storage</label><label><input type="checkbox" class="pm" value="VIBRATE" style="width:auto;margin:0"> Vibrate</label></div>
+<label>App icon (1024×1024 PNG, optional)</label><input type="file" id="ic" accept="image/png" onchange="icon(this)">
+<div class="row"><button class="b" id="bb" onclick="build()">🚀 APK banao</button></div>
+<div id="log">Taiyar. Token ko "Contents" aur "Actions" ki Read/Write permission chahiye. Saari files (index.html, css, js) APK mein jayengi.</div>
 </section>
+<nav id="nv"></nav>
 
 <script>
 const $=i=>document.getElementById(i);
-const SAMPLE=`<!DOCTYPE html>
-<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Hello</title>
-<style>body{font-family:sans-serif;text-align:center;padding:40px;background:#eef}button{padding:14px 24px;font-size:18px;border:0;border-radius:12px;background:#4f46e5;color:#fff}</style></head>
-<body><h1>Namaste 👋</h1><p>Count: <b id="c">0</b></p><button onclick="c.textContent=+c.textContent+1">Tap</button></body></html>`;
-const tabs=[['code','Code'],['prev','Preview'],['apk','APK']];
-$('nv').innerHTML=tabs.map(t=>`<button data-t="${t[0]}" onclick="go('${t[0]}')">${t[1]}</button>`).join('');
-function go(id){document.querySelectorAll('.tab').forEach(e=>e.classList.toggle('on',e.id=='t-'+id));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t==id));if(id=='prev')run()}
-function run(){$('fr').srcdoc=$('code').value}
-function sample(){$('code').value=SAMPLE;persist()}
-function openF(i){const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{$('code').value=r.result;persist()};r.readAsText(f);i.value=''}
-function dl(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([$('code').value],{type:'text/html'}));a.download='index.html';a.click()}
 const LS=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}};
-function persist(){LS('code',$('code').value)}
-$('code').value=LS('code')||SAMPLE;
-['gu','gr','gt','an','ai'].forEach(k=>{const v=LS('f_'+k);if(v)$(k).value=v;$(k).addEventListener('input',()=>LS('f_'+k,$(k).value))});
-$('code').addEventListener('keydown',e=>{if(e.key=='Tab'){e.preventDefault();const t=e.target,s=t.selectionStart;t.setRangeText('  ',s,t.selectionEnd,'end')}});
-
-const log=(m,c)=>{const d=document.createElement('div');if(c)d.className=c;d.innerHTML=m;$('log').appendChild(d);$('log').scrollTop=1e9};
+let P={files:{'index.html':''},cur:'index.html'};
+try{const s=JSON.parse(LS('proj')||'null');if(s&&s.files)P=s}catch(e){}
+const ta=$('ta'),hl=$('hl'),gt=$('gt');
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const save=()=>LS('proj',JSON.stringify(P));
+const cur=()=>P.cur;
+// tabs
+[['code','⌨ Code'],['run','▶ Run'],['url','🔗 URL'],['apk','📦 APK']].forEach(t=>{const b=document.createElement('button');b.textContent=t[1];b.dataset.t=t[0];b.onclick=()=>go(t[0]);$('nv').appendChild(b)});
+function go(id){document.querySelectorAll('.tab').forEach(e=>e.classList.toggle('on',e.id=='t-'+id));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t==id));if(id=='run')run()}
+// highlight
+const RX={html:/(&lt;!--[\s\S]*?--&gt;)|(&lt;\/?[a-zA-Z][\w-]*)|("[^"]*"|'[^']*')|(\b[\w-]+(?==))/g,
+css:/(\/\*[\s\S]*?\*\/)|("[^"]*"|'[^']*')|(#[0-9a-fA-F]{3,8}\b|\b\d+(?:\.\d+)?(?:px|em|rem|%|vh|vw|s)?\b)|([\w-]+(?=\s*:))/g,
+js:/(\/\/.*|\/\*[\s\S]*?\*\/)|("(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*'|`(?:\\.|[^`\\])*`)|\b(const|let|var|function|return|if|else|for|while|class|new|import|export|async|await|try|catch|switch|case|break|true|false|null|this)\b|(\b\d+\.?\d*\b)/g};
+const CL={html:['c','t','s','a'],css:['c','s','n','a'],js:['c','s','k','n']};
+function hi(t,f){const l=/\.css$/.test(f)?'css':/\.(js|json)$/.test(f)?'js':'html';const r=RX[l],c=CL[l];
+return esc(t).replace(r,(m,...g)=>{for(let i=0;i<4;i++)if(g[i]!==undefined)return'<span class="'+c[i]+'">'+m+'</span>';return m})}
+function paint(){const v=ta.value;hl.innerHTML=hi(v,cur())+'\n';gt.textContent=Array.from({length:v.split('\n').length},(_,i)=>i+1).join('\n');sync()}
+function sync(){hl.scrollTop=ta.scrollTop;hl.scrollLeft=ta.scrollLeft;gt.scrollTop=ta.scrollTop}
+ta.addEventListener('scroll',sync);
+ta.addEventListener('input',()=>{P.files[cur()]=ta.value;save();paint()});
+function load(){ta.value=P.files[cur()];paint();$('fl').innerHTML=Object.keys(P.files).map(f=>`<button class="f ${f==cur()?'on':''}" onclick="sw('${f.replace(/'/g,"\\'")}')">${esc(f)}</button>`).join('')}
+function sw(f){P.cur=f;save();load()}
+function addF(){let n=prompt('File ka naam (jaise style.css, script.js)');if(!n)return;n=n.trim();if(P.files[n]!=null){sw(n);return}P.files[n]='';sw(n)}
+function renF(){const o=cur(),n=(prompt('Naya naam',o)||'').trim();if(!n||n==o||P.files[n]!=null)return;P.files[n]=P.files[o];delete P.files[o];P.cur=n;save();load()}
+function delF(){if(Object.keys(P.files).length<2){alert('Kam se kam ek file rakho');return}if(!confirm(cur()+' delete karein?'))return;delete P.files[cur()];P.cur=Object.keys(P.files)[0];save();load()}
+function openF(i){const fs=[...i.files];let n=fs.length;fs.forEach(f=>{const r=new FileReader();r.onload=()=>{P.files[f.name]=r.result;P.cur=f.name;if(--n==0){save();load()}};r.readAsText(f)});i.value=''}
+function dlF(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([ta.value],{type:'text/plain'}));a.download=cur();a.click()}
+// editor helpers
+function exe(c){ta.focus();document.execCommand(c)}
+function ins(t){ta.focus();document.execCommand('insertText',false,t)}
+function tg(id){const e=$(id);e.style.display=e.style.display=='none'?'flex':'none'}
+let FS=+(LS('fs')||13);function fs(d){FS=Math.min(22,Math.max(10,FS+d));LS('fs',FS);document.documentElement.style.setProperty('--fs',FS+'px')}fs(0);
+function fnd(){const q=$('fq').value;if(!q)return;let i=ta.value.indexOf(q,ta.selectionEnd);if(i<0)i=ta.value.indexOf(q);if(i<0){alert('Nahi mila');return}ta.focus();ta.setSelectionRange(i,i+q.length)}
+function rep(all){const q=$('fq').value,r=$('rq').value;if(!q)return;if(all){ta.focus();ta.select();ins(ta.value.split(q).join(r))}else{if(ta.value.slice(ta.selectionStart,ta.selectionEnd)==q)ins(r);fnd()}}
+function fmt(){const h=/\.html?$/.test(cur());let d=0;const V='area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr';
+const o=ta.value.split('\n').map(x=>{x=x.trim();if(!x)return'';let op,cl,ld;
+if(h){op=(x.match(new RegExp('<(?!\\/|!|('+V+')\\b)[a-zA-Z][^>]*[^\\/]>','gi'))||[]).length;cl=(x.match(/<\/[a-zA-Z]/g)||[]).length;ld=/^<\//.test(x)?1:0}
+else{op=(x.match(/[{[(]/g)||[]).length;cl=(x.match(/[}\])]/g)||[]).length;ld=/^[}\])]/.test(x)?1:0}
+d=Math.max(0,d-ld);const r='  '.repeat(d)+x;d=Math.max(0,d+op-cl+ld);return r}).join('\n');ta.focus();ta.select();ins(o)}
+const SN={'HTML5 boilerplate':'<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>App</title>\n<link rel="stylesheet" href="style.css">\n</head>\n<body>\n\n<script src="script.js"><\/script>\n</body>\n</html>',
+'Button':'<button onclick="">Click</button>','Input + label':'<label>Naam<input id="x" type="text"></label>','Flex center':'display:flex;align-items:center;justify-content:center;','Media query':'@media (max-width:600px){\n  \n}','Fetch JSON':'fetch(url).then(r=>r.json()).then(d=>console.log(d)).catch(e=>console.error(e));','localStorage':"localStorage.setItem('k',JSON.stringify(v));\nconst v2=JSON.parse(localStorage.getItem('k')||'null');",'Event listener':"document.querySelector('#id').addEventListener('click',()=>{\n  \n});",'setInterval':'setInterval(()=>{\n  \n},1000);','Canvas':'<canvas id="c" width="300" height="300"></canvas>\n<script>\nconst x=document.getElementById("c").getContext("2d");\nx.fillRect(20,20,100,100);\n<\/script>'};
+Object.keys(SN).forEach(k=>{const o=document.createElement('option');o.textContent=k;$('sn').appendChild(o)});
+function snip(s){if(s.value)ins(SN[s.value]);s.selectedIndex=0}
+['Tab','<','>','/','"','=','{','}','(',')',';',':','#','.'].forEach(k=>{const b=document.createElement('button');b.className='f';b.textContent=k=='Tab'?'⇥':k;b.onmousedown=e=>{e.preventDefault();ins(k=='Tab'?'  ':k)};$('sy').appendChild(b)});
+const PR={'(':')','[':']','{':'}','"':'"',"'":"'"};
+ta.addEventListener('keydown',e=>{const s=ta.selectionStart;
+if(e.key=='Tab'){e.preventDefault();ins('  ')}
+else if(e.key=='Enter'){e.preventDefault();const ls=ta.value.lastIndexOf('\n',s-1)+1,ind=ta.value.slice(ls,s).match(/^\s*/)[0],pv=ta.value[s-1],nx=ta.value[s];
+if((pv=='{'||pv=='[')&&PR[pv]==nx){ins('\n'+ind+'  \n'+ind);const p=s+ind.length+3;ta.setSelectionRange(p,p)}else ins('\n'+ind+((pv=='{'||pv=='>'&&/<[a-z]+[^>]*>$/i.test(ta.value.slice(ls,s)))?'  ':''))}
+else if(PR[e.key]&&s==ta.selectionEnd&&!e.ctrlKey){e.preventDefault();if(ta.value[s]==e.key&&(e.key=='"'||e.key=="'"||e.key==')'||e.key=='}')){ta.setSelectionRange(s+1,s+1)}else{ins(e.key+PR[e.key]);ta.setSelectionRange(s+1,s+1)}}
+else if((e.key==')'||e.key=='}'||e.key==']')&&ta.value[s]==e.key){e.preventDefault();ta.setSelectionRange(s+1,s+1)}});
+// run
+const CON='<script>(function(){var s=function(t,a){parent.postMessage({k:"c",t:t,m:[].slice.call(a).map(function(x){try{return typeof x=="object"?JSON.stringify(x):String(x)}catch(e){return String(x)}}).join(" ")},"*")};["log","warn","error","info"].forEach(function(k){var o=console[k];console[k]=function(){s(k,arguments);o.apply(console,arguments)}});onerror=function(m,u,l){s("error",[m+" (line "+l+")"])};addEventListener("unhandledrejection",function(e){s("error",[String(e.reason)])})})()<\/script>';
+function bundle(){let h=P.files['index.html']??P.files[Object.keys(P.files).find(f=>/\.html?$/.test(f))]??'';
+h=h.replace(/<link[^>]*href=["']([^"']+\.css)["'][^>]*>/g,(m,f)=>P.files[f]!=null?'<style>'+P.files[f]+'</style>':m);
+h=h.replace(/<script([^>]*)src=["']([^"']+\.js)["']([^>]*)><\/script>/g,(m,a,f)=>P.files[f]!=null?'<script>'+P.files[f]+'<\/script>':m);return h}
+function run(){$('con').innerHTML='';$('fr').srcdoc=CON+bundle()}
+addEventListener('message',e=>{if(e.data&&e.data.k=='c'){const d=document.createElement('div');d.className=e.data.t=='error'?'er':e.data.t=='warn'?'wr':'';d.textContent='› '+e.data.m;$('con').appendChild(d);$('con').scrollTop=1e9}});
+$('ev').addEventListener('keydown',e=>{if(e.key!='Enter')return;const v=e.target.value;e.target.value='';try{const r=$('fr').contentWindow.eval(v);const d=document.createElement('div');d.className='ok';d.textContent='= '+String(r);$('con').appendChild(d)}catch(x){const d=document.createElement('div');d.className='er';d.textContent=String(x);$('con').appendChild(d)}});
+function chrome(){const u=URL.createObjectURL(new Blob([bundle()],{type:'text/html'}));if(!window.open(u,'_blank')){shareH()}}
+async function shareH(){const f=new File([bundle()],'index.html',{type:'text/html'});try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});return}}catch(e){}const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download='index.html';a.click()}
+// url
+const fixU=()=>{let u=$('ur').value.trim();if(u&&!/^https?:\/\//i.test(u))u='https://'+u;$('ur').value=u;LS('url',u);return u};
+$('ur').value=LS('url')||'';
+function urlRun(){const u=fixU();if(u)$('ufr').src=u}
+function urlChrome(){const u=fixU();if(!u)return;if(/Android/i.test(navigator.userAgent)){const m=u.match(/^(https?):\/\/(.*)$/i);location.href='intent://'+m[2]+'#Intent;scheme='+m[1].toLowerCase()+';package=com.android.chrome;end'}else window.open(u,'_blank')}
+async function urlSrc(){const u=fixU();if(!u)return;try{const r=await fetch(u);const t=await r.text();let n='remote.html',i=1;while(P.files[n]!=null)n='remote'+(++i)+'.html';P.files[n]=t;sw(n);go('code')}catch(e){alert('Source nahi aaya (site CORS allow nahi karti). Chrome mein kholo.')}}
+// apk
+['gu','gr','gt2','an','ai','vn','vc','or'].forEach(k=>{const v=LS('f_'+k);if(v)$(k).value=v;$(k).addEventListener('input',()=>LS('f_'+k,$(k).value))});
+let ICON=LS('icon')||'';function icon(i){const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{ICON=r.result.split(',')[1];LS('icon',ICON);log('Icon select ho gaya ✓','ok')};r.readAsDataURL(f)}
+const log=(m,c)=>{const d=document.createElement('div');if(c)d.className=c;d.innerHTML=m;$('log').appendChild(d);window.scrollTo(0,1e9)};
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const b64=s=>btoa(unescape(encodeURIComponent(s)));
 let H,API;
-async function gh(path,opt={}){const r=await fetch(API+path,{...opt,headers:{Authorization:'Bearer '+H,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28',...(opt.headers||{})}});return r}
-async function put(path,content,msg){let sha;const g=await gh('/contents/'+path);if(g.ok)sha=(await g.json()).sha;
-const r=await gh('/contents/'+path,{method:'PUT',body:JSON.stringify({message:msg,content:b64(content),sha})});if(!r.ok)throw new Error(path+' upload fail: '+r.status+' '+(await r.text()).slice(0,150))}
-function wf(name,id){const n=name.replace(/[^\w ]/g,'').trim()||'App',i=id.replace(/[^a-z0-9.]/gi,'').toLowerCase()||'com.myapp.app';
-return['name: Build APK','on: workflow_dispatch','jobs:','  build:','    runs-on: ubuntu-latest','    steps:','      - uses: actions/checkout@v4','      - uses: actions/setup-node@v4','        with: { node-version: 22 }','      - uses: actions/setup-java@v4','        with: { distribution: temurin, java-version: 21 }','      - name: Capacitor','        run: |','          npm init -y','          npm i @capacitor/core @capacitor/cli @capacitor/android','          npx cap init "'+n+'" '+i+' --web-dir=www','          npx cap add android','          npx cap sync android','      - name: Build','        run: cd android && chmod +x gradlew && ./gradlew assembleDebug','      - uses: actions/upload-artifact@v4','        with:','          name: app-apk','          path: android/app/build/outputs/apk/debug/app-debug.apk',''].join('\n')}
+const gh=(p,o={})=>fetch(API+p,{...o,headers:{Authorization:'Bearer '+H,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28',...(o.headers||{})}});
+async function put(path,c,msg,raw){let sha;const g=await gh('/contents/'+path);if(g.ok)sha=(await g.json()).sha;const r=await gh('/contents/'+path,{method:'PUT',body:JSON.stringify({message:msg,content:raw?c:b64(c),sha})});if(!r.ok)throw new Error(path+' upload fail: '+r.status+' '+(await r.text()).slice(0,120))}
+function wf(){const n=$('an').value.replace(/[^\w ]/g,'').trim()||'App',id=$('ai').value.replace(/[^a-z0-9.]/gi,'').toLowerCase()||'com.myapp.app',M='android/app/src/main/AndroidManifest.xml';
+const ps=['INTERNET',...[...document.querySelectorAll('.pm:checked')].map(c=>c.value)];
+const C=['npm init -y','npm i @capacitor/core @capacitor/cli @capacitor/android'+(ICON?' @capacitor/assets':''),'npx cap init "'+n+'" '+id+' --web-dir=www','npx cap add android',ICON?'npx capacitor-assets generate --android':'','npx cap sync android',
+...ps.map(p=>"sed -i 's#</manifest>#<uses-permission android:name=\"android.permission."+p+"\"/></manifest>#' "+M),
+$('or').value?"sed -i 's#<activity#<activity android:screenOrientation=\""+$('or').value+"\"#' "+M:'',
+"sed -i 's/versionCode 1/versionCode "+(+$('vc').value||1)+"/;s/versionName \"1.0\"/versionName \""+($('vn').value||'1.0').replace(/[^\w.]/g,'')+"\"/' android/app/build.gradle",
+'cd android && chmod +x gradlew && ./gradlew assembleDebug'].filter(Boolean);
+return['name: Build APK','on: workflow_dispatch','jobs:','  build:','    runs-on: ubuntu-latest','    steps:','      - uses: actions/checkout@v4','      - uses: actions/setup-node@v4','        with: { node-version: 22 }','      - uses: actions/setup-java@v4','        with: { distribution: temurin, java-version: 21 }','      - name: Build','        run: |',...C.map(c=>'          '+c),'      - uses: actions/upload-artifact@v4','        with:','          name: app-apk','          path: android/app/build/outputs/apk/debug/app-debug.apk',''].join('\n')}
 async function build(){
-const u=$('gu').value.trim(),r=$('gr').value.trim();H=$('gt').value.trim();API='https://api.github.com/repos/'+u+'/'+r;
+const u=$('gu').value.trim(),r=$('gr').value.trim();H=$('gt2').value.trim();API='https://api.github.com/repos/'+u+'/'+r;
 if(!u||!r||!H){alert('Username, repo aur token bharo');return}
+if(!Object.keys(P.files).some(f=>/\.html?$/.test(f))){alert('Pehle index.html mein code likho');return}
 $('log').innerHTML='';$('bb').disabled=true;
 try{
 const ri=await gh('');if(!ri.ok)throw new Error('Repo nahi mila / token galat ('+ri.status+')');
 const br=(await ri.json()).default_branch;
-log('Code upload ho raha hai...');
-await put('www/index.html',$('code').value,'Update app code');
-await put('.github/workflows/build.yml',wf($('an').value,$('ai').value),'Update build workflow');
+log('Files upload ho rahi hain...');
+for(const f of Object.keys(P.files))await put('www/'+f,P.files[f],'Update '+f);
+if(ICON)await put('assets/icon.png',ICON,'Update icon',true);
+await put('.github/workflows/build.yml',wf(),'Update build workflow');
 log('Build shuru kar rahe hain...');
 const t0=Date.now()-60000;let ok=false;
-for(let i=0;i<6&&!ok;i++){await sleep(3000);const d=await gh('/actions/workflows/build.yml/dispatches',{method:'POST',body:JSON.stringify({ref:br})});ok=d.status==204;if(!ok&&i==5)throw new Error('Dispatch fail '+d.status+' '+(await d.text()).slice(0,150))}
+for(let i=0;i<6&&!ok;i++){await sleep(3000);const d=await gh('/actions/workflows/build.yml/dispatches',{method:'POST',body:JSON.stringify({ref:br})});ok=d.status==204;if(!ok&&i==5)throw new Error('Dispatch fail '+d.status+' '+(await d.text()).slice(0,120))}
 let run=null;
 for(let i=0;i<20&&!run;i++){await sleep(4000);const l=await(await gh('/actions/workflows/build.yml/runs?event=workflow_dispatch&per_page=3')).json();run=(l.workflow_runs||[]).find(x=>new Date(x.created_at).getTime()>t0)}
 if(!run)throw new Error('Run nahi mila. Actions tab check karo.');
-log('Build chal raha hai (3-6 minute)... <a target="_blank" href="'+run.html_url+'">Live dekho</a>');
+log('Build chal raha hai (3-6 min)... <a target="_blank" href="'+run.html_url+'">Live dekho</a>');
 let st;
-for(let i=0;i<120;i++){await sleep(8000);st=await(await gh('/actions/runs/'+run.id)).json();if(st.status=='completed')break;if(i%4==3)log('Abhi bhi chal raha: '+st.status)}
-if(st.conclusion!='success'){let w='';try{const j=await(await gh('/actions/runs/'+run.id+'/jobs')).json();const f=(j.jobs[0].steps||[]).find(x=>x.conclusion=='failure');if(f)w=' Fail step: '+f.name+'.'}catch(e){}throw new Error('Build fail.'+w+' Logs: <a target="_blank" href="'+run.html_url+'">kholo</a>')}
+for(let i=0;i<120;i++){await sleep(8000);st=await(await gh('/actions/runs/'+run.id)).json();if(st.status=='completed')break}
+if(st.conclusion!='success'){let w='';try{const j=await(await gh('/actions/runs/'+run.id+'/jobs')).json();const f=(j.jobs[0].steps||[]).find(x=>x.conclusion=='failure');if(f)w=' Fail step: '+f.name+'.'}catch(e){}throw new Error('Build fail.'+w+' <a target="_blank" href="'+run.html_url+'">Logs kholo</a>')}
 log('Build ho gaya! Download...','ok');
-const arts=await(await gh('/actions/runs/'+run.id+'/artifacts')).json();
-const a=(arts.artifacts||[])[0];if(!a)throw new Error('Artifact nahi mila');
+const a=((await(await gh('/actions/runs/'+run.id+'/artifacts')).json()).artifacts||[])[0];if(!a)throw new Error('Artifact nahi mila');
 const z=await gh('/actions/artifacts/'+a.id+'/zip');if(!z.ok)throw new Error('Download fail '+z.status);
-const bl=await z.blob();const el=document.createElement('a');el.href=URL.createObjectURL(bl);el.download='app-apk.zip';el.click();
-log('✅ app-apk.zip download hua. Isko extract karke app-debug.apk install karo.','ok');
+const el=document.createElement('a');el.href=URL.createObjectURL(await z.blob());el.download='app-apk.zip';el.click();
+log('✅ app-apk.zip download hua. Extract karke app-debug.apk install karo.','ok');
 }catch(e){log('❌ '+e.message,'er')}
 $('bb').disabled=false}
+if(LS('light'))document.body.classList.add('light');
+load();go('code');
 </script></body></html>
